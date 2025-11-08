@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Relief Chain - Donate Now</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in {
+      animation: fadeIn 0.6s ease-out;
+    }
+    
+    /* Status message styling */
+    .status-info {
+      background-color: #dbeafe;
+      color: #1e40af;
+      border-left: 4px solid #3b82f6;
+      padding: 12px;
+      border-radius: 6px;
+    }
+    
+    .status-success {
+      background-color: #dcfce7;
+      color: #166534;
+      border-left: 4px solid #22c55e;
+      padding: 12px;
+      border-radius: 6px;
+    }
+    
+    .status-error {
+      background-color: #fecaca;
+      color: #991b1b;
+      border-left: 4px solid #ef4444;
+      padding: 12px;
+      border-radius: 6px;
+    }
+    
+    /* History item styling */
+    .history-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      border-bottom: 1px solid #e5e7eb;
+      transition: background-color 0.2s;
+    }
+    
+    .history-item:hover {
+      background-color: #f9fafb;
+    }
+    
+    .history-item .amount {
+      font-weight: bold;
+      color: #059669;
+    }
+    
+    .history-item .time {
+      font-size: 0.875rem;
+      color: #6b7280;
+    }
+    
+    /* Leaderboard styling */
+    .leaderboard-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+      border-bottom: 1px solid #e5e7eb;
+      transition: background-color 0.2s;
+    }
+    
+    .leaderboard-item:hover {
+      background-color: #f9fafb;
+    }
+    
+    .leaderboard-item.top1 {
+      background-color: #fef3c7;
+    }
+    
+    .leaderboard-item.top2 {
+      background-color: #f3f4f6;
+    }
+    
+    .leaderboard-item.top3 {
+      background-color: #fed7aa;
+    }
+    
+    .leaderboard-item .rank {
+      width: 40px;
+      font-weight: bold;
+      font-size: 1.125rem;
+    }
+    
+    .leaderboard-item .donor-info {
+      flex: 1;
+    }
+    
+    .leaderboard-item .donor-address {
+      font-weight: 500;
+    }
+    
+    .leaderboard-item .donor-amount {
+      font-weight: bold;
+      color: #059669;
+    }
+    
+    /* Empty state styling */
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #9ca3af;
+    }
+    
+    .empty-state-icon {
+      font-size: 3rem;
+      margin-bottom: 16px;
+    }
+    
+    /* Selected disaster styling */
+    .disaster-option.selected {
+      border-color: #3b82f6;
+      background-color: #dbeafe;
+    }
+    
+    /* Loading spinner */
+    .spinner {
+      border: 3px solid #f3f4f6;
+      border-top: 3px solid #3b82f6;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+      margin-right: 8px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* Responsive improvements */
+    @media (max-width: 768px) {
+      .history-item, .leaderboard-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+      
+      .history-item > div, .leaderboard-item > div {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 via-white to-purple-50 text-gray-800">
+
+  <!-- Navbar -->
+  <nav class="bg-white/80 backdrop-blur-md shadow-sm fixed top-0 left-0 w-full z-50"></nav>
+    <div class="max-w-7xl mx-auto flex justify-between items-center px-6 py-4">
+      <a href="home.html" class="flex items-center space-x-2">
+        <svg class="w-8 h-8 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 
+            2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09
+            C13.09 3.81 14.76 3 16.5 3
+            19.58 3 22 5.42 22 8.5
+            c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+        </svg>
+        <span class="text-xl font-bold text-gray-900">Relief Chain</span>
+      </a>
+      <!-- <a href="home.html" class="px-5 py-2 border-2 border-gray-300 text-gray-700 rounded-lg hover:border-gray-400 transition">
+        ← Back to Home
+      </a> -->
+    </div>
+  </nav>
+
+  <!-- spacer to offset fixed navbar height -->
+  <!-- <div class="h-16"></div> -->
+
+  <!-- Alert Banner -->
+  <div class="bg-gradient-to-r from-red-500 to-red-600 text-white py-3 px-6">
+    <div class="max-w-7xl mx-auto text-center">
+      <p class="font-semibold">🚨 Emergency Relief Active: 100% of donations go directly to affected communities</p>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-6 py-8">
+    <!-- Page Header -->
+    <div class="text-center mb-12 fade-in">
+      <h1 class="text-4xl md:text-5xl font-extrabold mb-4">
+        Make Your <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">Impact</span>
+      </h1>
+      <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+        Choose your cause, select a region, and make a transparent blockchain donation
+      </p>
+    </div>
+
+    <!-- Transparency Notice -->
+    <div class="mb-8 bg-yellow-50 border-l-4 border-yellow-500 p-6 rounded-lg shadow-md">
+      <h3 class="text-lg font-bold text-yellow-800 mb-2 flex items-center gap-2">
+            🔍 Blockchain Transparency
+      </h3>
+      <p class="text-yellow-800 mb-3">
+        <strong>All donations are publicly recorded on the blockchain.</strong> Every transaction is permanently stored and can be independently verified. The smart contract restricts fund withdrawals to the designated relief coordinator address.
+      </p>
+      <p class="text-sm text-yellow-800">
+        <strong>Smart Contract:</strong> <code class="bg-blue-100 px-2 py-1 rounded">0xC559991a7ADeC119Ca37f0Bf3268b8EFd3C431B3</code>
+      </p>
+    </div>
+
+    <div class="grid lg:grid-cols-3 gap-8">
+      
+      <!-- Main Donation Card - Spans 2 columns -->
+      <div class="lg:col-span-2 space-y-6">
+        
+        <!-- Connect Wallet Card -->
+        <div class="bg-white rounded-xl shadow-lg p-6 border-2 border-red-200">
+          <h2 class="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+            ❤️ Make a Donation
+          </h2>
+          
+          <button id="connectButton" class="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-4 rounded-lg font-semibold hover:from-blue-700 hover:to-blue-800 transition shadow-lg flex items-center justify-center">
+            <span id="connectButtonText">Connect Wallet to Donate</span>
+            <div id="connectSpinner" class="spinner hidden"></div>
+          </button>
+          
+          <div class="wallet-info hidden mt-4 bg-blue-50 p-4 rounded-lg" id="walletInfo">
+            <p class="font-semibold text-gray-700">Connected Address:</p>
+            <p id="walletAddress" class="font-mono text-sm text-gray-600 break-all">Not connected</p>
+            <p class="mt-3 font-semibold text-gray-700">Your Total Contributions: <span id="userDonations" class="text-blue-600">0</span> PAS</p>
+            <div class="mt-2 inline-flex items-center gap-2 bg-green-500 text-white px-3 py-1 rounded-full text-sm">
+              ✓ Connected to Paseo Network
+            </div>
+          </div>
+        </div>
+
+        <!-- Disaster & Region Selection -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+          <h3 class="text-xl font-bold text-gray-900 mb-4">🎯 Choose Your Impact</h3>
+          
+          <div id="disasterSelector" class="mb-6">
+            <label class="block text-sm font-semibold text-gray-700 mb-3">Select Disaster Type:</label>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div class="disaster-option border-2 border-gray-200 rounded-lg p-3 cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition" data-id="typhoon">
+                <div class="font-medium">🌪️ Typhoon Relief</div>
+                <div class="text-sm text-gray-600">Support typhoon-affected communities</div>
+              </div>
+              <div class="disaster-option border-2 border-gray-200 rounded-lg p-3 cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition" data-id="earthquake">
+                <div class="font-medium">🏔️ Earthquake Response</div>
+                <div class="text-sm text-gray-600">Aid for earthquake-affected areas</div>
+              </div>
+              <div class="disaster-option border-2 border-gray-200 rounded-lg p-3 cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition" data-id="flood">
+                <div class="font-medium">🌊 Flood Recovery</div>
+                <div class="text-sm text-gray-600">Help flood victims rebuild</div>
+              </div>
+              <div class="disaster-option border-2 border-gray-200 rounded-lg p-3 cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition" data-id="fire">
+                <div class="font-medium">🔥 Fire Disaster Aid</div>
+                <div class="text-sm text-gray-600">Support fire-affected families</div>
+              </div>
+              <div class="disaster-option border-2 border-gray-200 rounded-lg p-3 cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition" data-id="volcano">
+                <div class="font-medium">🌋 Volcanic Eruption</div>
+                <div class="text-sm text-gray-600">Assist volcanic eruption victims</div>
+              </div>
+              <div class="disaster-option border-2 border-gray-200 rounded-lg p-3 cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition" data-id="general">
+                <div class="font-medium">🤝 General Relief Fund</div>
+                <div class="text-sm text-gray-600">General disaster relief efforts</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-6">
+            <label class="block text-sm font-semibold text-gray-700 mb-2">📍 Select Region in Philippines:</label>
+            <select id="regionSelect" class="w-full border-2 border-gray-300 rounded-lg p-3 focus:border-blue-500 focus:outline-none">
+              <option value="">Choose a region...</option>
+              <option value="National Capital Region (NCR)">National Capital Region (NCR)</option>
+              <option value="Cordillera Administrative Region (CAR)">Cordillera Administrative Region (CAR)</option>
+              <option value="Ilocos Region (Region I)">Ilocos Region (Region I)</option>
+              <option value="Cagayan Valley (Region II)">Cagayan Valley (Region II)</option>
+              <option value="Central Luzon (Region III)">Central Luzon (Region III)</option>
+              <option value="Calabarzon (Region IV-A)">Calabarzon (Region IV-A)</option>
+              <option value="Mimaropa (Region IV-B)">Mimaropa (Region IV-B)</option>
+              <option value="Bicol Region (Region V)">Bicol Region (Region V)</option>
+              <option value="Western Visayas (Region VI)">Western Visayas (Region VI)</option>
+              <option value="Central Visayas (Region VII)">Central Visayas (Region VII)</option>
+              <option value="Eastern Visayas (Region VIII)">Eastern Visayas (Region VIII)</option>
+              <option value="Zamboanga Peninsula (Region IX)">Zamboanga Peninsula (Region IX)</option>
+              <option value="Northern Mindanao (Region X)">Northern Mindanao (Region X)</option>
+              <option value="Davao Region (Region XI)">Davao Region (Region XI)</option>
+              <option value="Soccsksargen (Region XII)">Soccsksargen (Region XII)</option>
+              <option value="Caraga (Region XIII)">Caraga (Region XIII)</option>
+              <option value="Bangsamoro (BARMM)">Bangsamoro (BARMM)</option>
+            </select>
+          </div>
+
+          <input type="hidden" id="selectedDisaster" value="">
+        </div>
+
+        <!-- Amount Selection -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+          <h3 class="text-xl font-bold text-gray-900 mb-4">💝 Donation Amount</h3>
+          
+          <input type="number" id="amount" placeholder="Enter amount in PAS (e.g., 10)" min="0.01" step="0.01" 
+            class="w-full border-2 border-gray-300 rounded-lg p-4 text-lg focus:border-blue-500 focus:outline-none mb-4">
+          
+          <div class="grid grid-cols-3 gap-3 mb-6">
+            <button onclick="document.getElementById('amount').value = '5'" 
+              class="bg-gray-200 hover:bg-gray-300 text-gray-800 py-3 rounded-lg font-semibold transition">
+              5 PAS
+            </button>
+            <button onclick="document.getElementById('amount').value = '10'" 
+              class="bg-gray-200 hover:bg-gray-300 text-gray-800 py-3 rounded-lg font-semibold transition">
+              10 PAS
+            </button>
+            <button onclick="document.getElementById('amount').value = '25'" 
+              class="bg-gray-200 hover:bg-gray-300 text-gray-800 py-3 rounded-lg font-semibold transition">
+              25 PAS
+            </button>
+          </div>
+          
+          <button id="donateButton" disabled 
+            class="w-full bg-gradient-to-r from-green-600 to-green-700 text-white py-4 rounded-lg font-bold text-lg hover:from-green-700 hover:to-green-800 transition shadow-lg disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center">
+            <span id="donateButtonText">🎁 Donate Now</span>
+            <div id="donateSpinner" class="spinner hidden"></div>
+          </button>
+
+          <div id="status" class="mt-4 hidden"></div>
+
+          <div class="mt-6 bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded">
+            <h4 class="font-bold text-yellow-800 mb-2">📋 Fund Distribution</h4>
+            <p class="text-sm text-yellow-800">Funds are withdrawn periodically by verified relief coordinators and distributed to affected communities. All withdrawals are recorded on-chain.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Sidebar -->
+      <div class="lg:col-span-1 space-y-6">
+        
+        <!-- Balance Card -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+          <h2 class="text-xl font-bold text-gray-900 mb-4">📊 Relief Fund</h2>
+          <div class="bg-gradient-to-r from-green-500 to-green-600 text-white p-6 rounded-lg text-center">
+            <div class="text-sm mb-2">Current Balance</div>
+            <div class="text-4xl font-bold mb-2"><span id="balance">0</span> PAS</div>
+            <div class="text-lg opacity-90 mb-1">≈ ₱<span id="balancePHP">0.00</span></div>
+            <div class="text-xs opacity-75">Available for deployment</div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 mt-4">
+            <div class="bg-blue-50 p-3 rounded-lg text-center">
+              <div class="text-2xl font-bold text-blue-600" id="totalDonations">0</div>
+              <div class="text-xs text-gray-600 mt-1">Total Raised</div>
+            </div>
+            <div class="bg-purple-50 p-3 rounded-lg text-center">
+              <div class="text-2xl font-bold text-purple-600" id="totalDonors">0</div>
+              <div class="text-xs text-gray-600 mt-1">Total Donors</div>
+            </div>
+            <div class="bg-green-50 p-3 rounded-lg text-center">
+              <div class="text-2xl font-bold text-green-600" id="avgDonation">0</div>
+              <div class="text-xs text-gray-600 mt-1">Avg. Donation</div>
+            </div>
+            <div class="bg-red-50 p-3 rounded-lg text-center">
+              <div class="text-2xl font-bold text-red-600" id="totalTransactions">0</div>
+              <div class="text-xs text-gray-600 mt-1">Transactions</div>
+            </div>
+          </div>
+
+          <button id="refreshButton" 
+            class="w-full mt-4 bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 rounded-lg font-semibold transition flex items-center justify-center">
+            <span id="refreshButtonText">🔄 Refresh Data</span>
+            <div id="refreshSpinner" class="spinner hidden"></div>
+          </button>
+        </div>
+
+        <!-- Smart Contract Info -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+          <h2 class="text-xl font-bold text-gray-900 mb-4">🔐 Blockchain Verification</h2>
+          
+          <div class="space-y-3 text-sm">
+            <div>
+              <p class="font-semibold text-gray-700">Network:</p>
+              <p class="text-gray-600">Paseo Testnet (Chain ID: 420420422)</p>
+            </div>
+            
+            <div>
+              <p class="font-semibold text-gray-700">Contract Address:</p>
+              <code class="block bg-gray-100 p-2 rounded text-xs break-all" id="contractAddress">
+                0xC559991a7ADeC119Ca37f0Bf3268b8EFd3C431B3
+              </code>
+            </div>
+            
+            <div>
+              <p class="font-semibold text-gray-700">Relief Coordinator:</p>
+              <code class="block bg-gray-100 p-2 rounded text-xs break-all" id="ownerAddress">
+                Loading...
+              </code>
+            </div>
+          </div>
+
+          <div class="mt-4 pt-4 border-t border-gray-200">
+            <h4 class="font-semibold text-gray-700 mb-2">✅ Contract Features:</h4>
+            <ul class="text-xs text-gray-600 space-y-1">
+              <li>✓ Immutable donation records</li>
+              <li>✓ Public balance transparency</li>
+              <li>✓ Authorized withdrawal only</li>
+              <li>✓ Event-based audit trail</li>
+              <li>✓ Zero administrative fees</li>
+            </ul>
+          </div>
+
+          <button onclick="window.open('https://paseo.subscan.io/', '_blank')" 
+            class="w-full mt-4 bg-gray-700 hover:bg-gray-800 text-white py-2 rounded-lg text-sm font-semibold transition">
+            🔍 View on Block Explorer
+          </button>
+          <button onclick="window.open('https://paseo.subscan.io/account/0xC559991a7ADeC119Ca37f0Bf3268b8EFd3C431B3', '_blank')"
+            class="w-full mt-4 bg-blue-700 hover:bg-blue-800 text-white py-2 rounded-lg text-sm font-semibold transition">
+            🔍 Verify Donations on Paseo Explorer
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Impact Reports Section -->
+    <div class="mt-8 bg-white rounded-xl shadow-lg p-6">
+      <h2 class="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+        📈 Impact Reports by Disaster & Region
+      </h2>
+      <p class="text-gray-600 mb-6">See exactly where your donations are making a difference — inspired by BitGive's transparency model.</p>
+      <div id="impactReports">
+        <div class="empty-state">
+          <div class="empty-state-icon">📊</div>
+          <p>No impact data yet. Be the first to donate!</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Leaderboard -->
+    <div class="mt-8 bg-white rounded-xl shadow-lg p-6">
+      <h2 class="text-2xl font-bold text-gray-900 mb-4">🏆 Top Contributors - Hall of Heroes</h2>
+      <p class="text-gray-600 mb-6">Thank you to our most generous supporters making a difference!</p>
+      <div id="leaderboardContainer">
+        <div class="empty-state">
+          <div class="empty-state-icon">🎯</div>
+          <p>No donations yet. Be the first hero!</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Donation Feed -->
+    <div class="mt-8 bg-white rounded-xl shadow-lg p-6">
+      <h2 class="text-2xl font-bold text-gray-900 mb-4">📜 Live Donation Feed</h2>
+      <p class="text-gray-600 mb-6">Real-time blockchain-verified donations</p>
+      <div id="historyContainer">
+        <div class="empty-state">
+          <div class="empty-state-icon">📋</div>
+          <p>No donations recorded yet</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-gray-400 py-12 mt-12">
+    <div class="max-w-7xl mx-auto px-6 text-center">
+      <div class="flex items-center justify-center space-x-2 mb-4">
+        <svg class="w-6 h-6 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 
+            2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09
+            C13.09 3.81 14.76 3 16.5 3
+            19.58 3 22 5.42 22 8.5
+            c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+        </svg>
+        <span class="text-xl font-bold text-white">Relief Chain</span>
+      </div>
+      <p class="text-sm mb-4">Transparent disaster relief powered by Paseo blockchain</p>
+      <div class="border-t border-gray-800 pt-6 text-sm">
+        &copy; 2025 Relief Chain. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
