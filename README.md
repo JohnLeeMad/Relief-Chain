@@ -183,12 +183,8 @@ The dashboard displays:
 ## 🗺️ Roadmap
 
 Future enhancements planned:
-- [ ] Multi-chain support (Ethereum, BSC, Polygon)
-- [ ] NFT badges for top contributors
 - [ ] Detailed fund allocation reports
-- [ ] Mobile application
 - [ ] Integration with traditional payment gateways
-- [ ] Automated distribution to verified relief organizations
 - [ ] Real-time disaster alert integration
 
 ## 🤝 Contributing
