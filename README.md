@@ -185,7 +185,6 @@ The dashboard displays:
 Future enhancements planned:
 - [ ] Detailed fund allocation reports
 - [ ] Integration with traditional payment gateways
-- [ ] Real-time disaster alert integration
 
 ## 🤝 Contributing
 
